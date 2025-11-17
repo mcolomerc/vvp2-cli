@@ -1,0 +1,11 @@
+metadata:
+  name: kubernetes-target
+  namespace: default
+  labels:
+    environment: default
+    type: kubernetes
+  annotations:
+    description: "Kubernetes deployment target for default workloads"
+spec:
+  kubernetes:
+    namespace: "vvp-jobs"

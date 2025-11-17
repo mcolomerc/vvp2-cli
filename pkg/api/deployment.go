@@ -105,7 +105,12 @@ type Logging struct {
 
 // DeploymentList represents a list of deployments
 type DeploymentList struct {
-	Items []Deployment `json:"items"`
+	Items []DeploymentWithInfo `json:"items"`
+}
+
+// DeploymentWithInfo wraps deployment with operator info
+type DeploymentWithInfo struct {
+	Deployment Deployment `json:"deployment"`
 }
 
 // ListDeployments lists all deployments in a namespace
@@ -124,16 +129,16 @@ func (c *Client) ListDeployments(namespace string) (*DeploymentList, error) {
 
 // GetDeployment gets a deployment by name
 func (c *Client) GetDeployment(namespace, name string) (*Deployment, error) {
-	var result Deployment
+	var wrapper DeploymentWithInfo
 	resp, err := c.httpClient.R().
-		SetResult(&result).
+		SetResult(&wrapper).
 		Get(fmt.Sprintf("/api/v1/namespaces/%s/deployments/with-cr/%s", namespace, name))
 
 	if err := handleResponse(resp, err); err != nil {
 		return nil, err
 	}
 
-	return &result, nil
+	return &wrapper.Deployment, nil
 }
 
 // CreateDeployment creates a new deployment

@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: flink-play-job
+  namespace: default
+  labels:
+    app: flink-play
+    version: v1.0.0
+  annotations:
+    description: "Streaming data processing job"
+spec:
+  state: RUNNING 
+  deploymentTargetName: kubernetes-target
+  restoreStrategy:
+    kind: LATEST_STATE
+    allowNonRestoredState: false
+  upgradeStrategy:
+    kind: STATEFUL 
+  template:
+    spec:
+      artifact:
+        kind: JAR
+        jarUri: http://minio.vvp.svc:9000/maven/org/mcolomerc/flink-play/1.0-SNAPSHOT/flink-play-1.0-20251117.104425-1.jar
+        flinkVersion: "1.20"
+        flinkImageRepository: flink
+        flinkImageTag: 1.20.1-stream1-scala_2.12-java11
+
+      parallelism: 2
+      numberOfTaskManagers: 2 
+      flinkConfiguration:
+        taskmanager.numberOfTaskSlots: "2"  

@@ -135,7 +135,13 @@ func runListDeployments(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to list deployments: %w", err)
 	}
 
-	return printDeployments(deployments.Items)
+	// Extract deployments from the wrapper
+	items := make([]api.Deployment, len(deployments.Items))
+	for i, item := range deployments.Items {
+		items[i] = item.Deployment
+	}
+
+	return printDeployments(items)
 }
 
 func runGetDeployment(cmd *cobra.Command, args []string) error {
