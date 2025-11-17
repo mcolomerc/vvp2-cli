@@ -7,9 +7,9 @@ import (
 
 // Deployment represents a VVP deployment
 type Deployment struct {
-	Metadata DeploymentMetadata `json:"metadata"`
-	Spec     DeploymentSpec     `json:"spec"`
-	Status   DeploymentStatus   `json:"status,omitempty"`
+	Metadata DeploymentMetadata  `json:"metadata"`
+	Spec     DeploymentSpec      `json:"spec"`
+	Status   *DeploymentStatus   `json:"status,omitempty"`
 }
 
 // DeploymentMetadata holds deployment metadata
@@ -47,7 +47,7 @@ type UpgradeStrategy struct {
 
 // RestoreStrategy defines restore strategy
 type RestoreStrategy struct {
-	Kind                  string `json:"kind,omitempty"`
+	Kind                  string `json:"kind"`
 	AllowNonRestoredState bool   `json:"allowNonRestoredState,omitempty"`
 }
 
@@ -77,7 +77,7 @@ type TemplateSpec struct {
 // Artifact represents a JAR artifact
 type Artifact struct {
 	Kind          string `json:"kind"`
-	JarURI        string `json:"jarUri,omitempty"`
+	JarURI        string `json:"jarUri"`
 	MainClass     string `json:"mainClass,omitempty"`
 	EntryClass    string `json:"entryClass,omitempty"`
 	MainArgs      string `json:"mainArgs,omitempty"`
