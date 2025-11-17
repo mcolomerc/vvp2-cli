@@ -13,8 +13,7 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 - ⚠️ **Deployments (Write)**: Create/update/delete operations require validation against your VVP instance
 - ❓ **Sessions**: Endpoints need verification
 - ❓ **Deployment Targets**: API availability needs confirmation
-
-See [docs/API_VALIDATION.md](docs/API_VALIDATION.md) for detailed endpoint mapping and [docs/API_UPDATES_PHASE1.md](docs/API_UPDATES_PHASE1.md) for recent changes.
+ 
 
 ## Features
 
