@@ -1,5 +1,7 @@
 # vvp2 CLI
 
+> **⚠️ EXPERIMENTAL PROJECT**: This is an experimental CLI tool under active development. Features may be incomplete, APIs may change, and stability is not guaranteed. Use at your own risk and avoid using in production environments without thorough testing.
+
 A command-line interface tool for interacting with the Ververica Platform (VVP) API. Built with Go, using Cobra for CLI framework and Viper for configuration management.
 
 ## ⚠️ API Status
