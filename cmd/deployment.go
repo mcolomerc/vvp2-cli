@@ -114,6 +114,9 @@ func init() {
 
 	updateDeploymentCmd.Flags().StringVarP(&deploymentFile, "file", "f", "", "Path to deployment YAML/JSON file (required)")
 	updateDeploymentCmd.MarkFlagRequired("file")
+	
+	deleteDeploymentCmd.Flags().BoolP("force", "", false, "Force delete by cancelling the deployment first if needed")
+	updateDeploymentCmd.MarkFlagRequired("file")
 }
 
 func runListDeployments(cmd *cobra.Command, args []string) error {
@@ -215,6 +218,27 @@ func runDeleteDeployment(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	force, _ := cmd.Flags().GetBool("force")
+	
+	// If force flag is set, try to cancel the deployment first
+	if force {
+		// Get current deployment state
+		deployment, err := client.GetDeployment(ns, args[0])
+		if err != nil {
+			return fmt.Errorf("failed to get deployment: %w", err)
+		}
+		
+		// If not already cancelled, cancel it first
+		if deployment.Spec.State != "CANCELLED" {
+			fmt.Printf("Cancelling deployment %s before deletion...\n", args[0])
+			if _, err := client.UpdateDeploymentState(ns, args[0], "CANCELLED"); err != nil {
+				return fmt.Errorf("failed to cancel deployment: %w", err)
+			}
+			fmt.Printf("Deployment %s transitioned to CANCELLED state\n", args[0])
+			fmt.Printf("Note: The deployment may take some time to fully cancel. If deletion fails, wait a moment and try again.\n")
+		}
+	}
+
 	if err := client.DeleteDeployment(ns, args[0]); err != nil {
 		return fmt.Errorf("failed to delete deployment: %w", err)
 	}
@@ -280,7 +304,7 @@ func printDeployments(deployments []api.Deployment) error {
 		fmt.Fprintln(w, "NAME\tNAMESPACE\tSTATE\tCREATED")
 		for _, d := range deployments {
 			state := "N/A"
-			if d.Status.State != "" {
+			if d.Status != nil && d.Status.State != "" {
 				state = d.Status.State
 			} else if d.Spec.State != "" {
 				state = d.Spec.State
