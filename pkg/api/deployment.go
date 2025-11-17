@@ -92,9 +92,10 @@ type Resources struct {
 }
 
 // ResourceSpec defines CPU and memory resources
+// CPU and Memory can be strings or numbers from the API, so we use interface{}
 type ResourceSpec struct {
-	CPU    string `json:"cpu,omitempty"`
-	Memory string `json:"memory,omitempty"`
+	CPU    interface{} `json:"cpu,omitempty"`
+	Memory interface{} `json:"memory,omitempty"`
 }
 
 // Logging defines logging configuration
