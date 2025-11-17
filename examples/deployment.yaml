@@ -1,0 +1,49 @@
+metadata:
+  name: streaming-job
+  namespace: production
+  labels:
+    app: data-pipeline
+    version: v1.0.0
+  annotations:
+    description: "Streaming data processing job"
+spec:
+  state: RUNNING
+  upgradeStrategy:
+    kind: STATEFUL
+  restoreStrategy:
+    kind: LATEST_STATE
+    allowNonRestoredState: false
+  maxSavepointCreationTime: 10m
+  maxJobCreationTime: 5m
+  template:
+    spec:
+      artifact:
+        kind: JAR
+        jarUri: "s3://my-bucket/flink-jobs/streaming-job-1.0.0.jar"
+        mainClass: "com.example.StreamingJob"
+        mainArgs: "--input kafka://broker:9092/input-topic --output kafka://broker:9092/output-topic"
+        flinkVersion: "1.17"
+      parallelism: 4
+      numberOfTaskManagers: 2
+      flinkVersion: "1.17"
+      flinkConfiguration:
+        taskmanager.numberOfTaskSlots: "2"
+        state.backend: "rocksdb"
+        state.checkpoints.dir: "s3://my-bucket/checkpoints"
+        state.savepoints.dir: "s3://my-bucket/savepoints"
+        execution.checkpointing.interval: "60s"
+        execution.checkpointing.mode: "EXACTLY_ONCE"
+        restart-strategy: "fixed-delay"
+        restart-strategy.fixed-delay.attempts: "3"
+        restart-strategy.fixed-delay.delay: "10s"
+      resources:
+        jobmanager:
+          cpu: "1"
+          memory: "2G"
+        taskmanager:
+          cpu: "2"
+          memory: "4G"
+      logging:
+        log4jLoggers:
+          com.example: "INFO"
+          org.apache.flink: "WARN"

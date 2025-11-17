@@ -1,0 +1,26 @@
+# Ververica Platform CLI Configuration File
+# This file should be placed at ~/.vvp2/config.yaml
+# 
+# Use 'vvp2 config init' to create this file interactively,
+# or manually create ~/.vvp2/config.yaml and copy this content.
+
+# API Configuration
+api:
+  # Ververica Platform API URL
+  url: "http://vvp.localhost"
+  
+  # API authentication token (optional, can be set via VVP_API_TOKEN env var)
+  token: ""
+  
+  # Skip TLS certificate verification (for self-signed certificates)
+  insecure: false
+
+# Default values
+default:
+  # Default namespace to use when -n flag is not specified
+  namespace: "default"
+
+# Output configuration
+output:
+  # Output format: table, json, or yaml
+  format: "table"

@@ -1,0 +1,21 @@
+metadata:
+  name: sql-session
+  namespace: production
+  labels:
+    app: analytics
+    type: sql-session
+  annotations:
+    description: "SQL session for interactive queries"
+spec:
+  deploymentTargetId: "default"
+  flinkVersion: "1.17"
+  flinkConfiguration:
+    execution.checkpointing.interval: "60s"
+    execution.checkpointing.mode: "EXACTLY_ONCE"
+    state.backend: "rocksdb"
+    taskmanager.numberOfTaskSlots: "4"
+    parallelism.default: "2"
+    table.exec.resource.default-parallelism: "2"
+  sessionClusterResourceProfile:
+    cpu: "4"
+    memory: "8G"

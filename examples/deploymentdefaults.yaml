@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: DeploymentDefaults
+metadata:
+  namespace: default
+  name: deployment-defaults
+spec:
+  deploymentTargetName: default
+  upgradeStrategy:
+    kind: STATEFUL
+  template:
+    spec:
+      parallelism: 2
+      logging:
+        loggingProfile: "default"
+      flinkConfiguration:
+        taskmanager.numberOfTaskSlots: "2"
+      resources:
+        jobmanager:
+          cpu: "1"
+          memory: "1G"
+        taskmanager:
+          cpu: "2"
+          memory: "2G"

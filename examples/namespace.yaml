@@ -1,0 +1,18 @@
+metadata:
+  name: production
+  labels:
+    environment: production
+    team: data-engineering
+  annotations:
+    description: "Production namespace for Flink jobs"
+spec:
+  roleBindings:
+    - role: owner
+      members:
+        - admin@example.com
+    - role: editor
+      members:
+        - developer@example.com
+    - role: viewer
+      members:
+        - viewer@example.com
