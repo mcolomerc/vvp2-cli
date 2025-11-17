@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries for all platforms
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          COMMIT=$(git rev-parse --short HEAD)
+          BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          LDFLAGS="-w -s -X main.version=${VERSION} -X main.commit=${COMMIT} -X main.buildTime=${BUILD_TIME}"
+          
+          mkdir -p dist
+          
+          # Build for all platforms
+          PLATFORMS="linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64"
+          
+          for PLATFORM in $PLATFORMS; do
+            OS=$(echo $PLATFORM | cut -d'/' -f1)
+            ARCH=$(echo $PLATFORM | cut -d'/' -f2)
+            OUTPUT_NAME="vvp2"
+            
+            if [ "$OS" = "windows" ]; then
+              OUTPUT_NAME="vvp2.exe"
+            fi
+            
+            echo "Building for $OS/$ARCH..."
+            
+            mkdir -p dist/vvp2-$OS-$ARCH
+            CGO_ENABLED=0 GOOS=$OS GOARCH=$ARCH go build \
+              -ldflags="${LDFLAGS}" \
+              -o dist/vvp2-$OS-$ARCH/$OUTPUT_NAME \
+              .
+            
+            # Create archives
+            cd dist
+            if [ "$OS" = "windows" ]; then
+              zip -q vvp2-$OS-$ARCH.zip vvp2-$OS-$ARCH/*
+            else
+              tar -czf vvp2-$OS-$ARCH.tar.gz vvp2-$OS-$ARCH/
+            fi
+            rm -rf vvp2-$OS-$ARCH
+            cd ..
+          done
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/checksums.txt
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

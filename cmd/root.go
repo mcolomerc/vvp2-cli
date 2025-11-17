@@ -11,9 +11,19 @@ import (
 )
 
 var (
-	cfgFile string
-	cfg     *config.Config
+	cfgFile   string
+	cfg       *config.Config
+	version   = "dev"
+	commit    = "none"
+	buildTime = "unknown"
 )
+
+// SetVersionInfo sets the version information from the build
+func SetVersionInfo(v, c, bt string) {
+	version = v
+	commit = c
+	buildTime = bt
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

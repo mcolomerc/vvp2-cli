@@ -1,4 +1,4 @@
-# VVP CLI
+# vvp2 CLI
 
 A command-line interface tool for interacting with the Ververica Platform (VVP) API. Built with Go, using Cobra for CLI framework and Viper for configuration management.
 
@@ -27,23 +27,50 @@ See [docs/API_VALIDATION.md](docs/API_VALIDATION.md) for detailed endpoint mappi
 
 ## Installation
 
+### Quick Install (Recommended)
+
+```bash
+curl -sSL https://raw.githubusercontent.com/mcolomerc/vvp2-cli/main/install.sh | bash
+```
+
+### Manual Binary Download
+
+Download the appropriate binary for your platform from the [releases page](https://github.com/mcolomerc/vvp2-cli/releases):
+
+- **Linux (AMD64)**: `vvp2-linux-amd64.tar.gz`
+- **Linux (ARM64)**: `vvp2-linux-arm64.tar.gz`
+- **macOS (Intel)**: `vvp2-darwin-amd64.tar.gz`
+- **macOS (Apple Silicon)**: `vvp2-darwin-arm64.tar.gz`
+- **Windows (AMD64)**: `vvp2-windows-amd64.zip`
+
+Then extract and install:
+
+```bash
+# Example for Linux AMD64
+tar -xzf vvp2-linux-amd64.tar.gz
+sudo mv vvp2 /usr/local/bin/
+chmod +x /usr/local/bin/vvp2
+```
+
 ### Build from Source
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/mcolomerc/vvp2-cli.git
 cd vvp2-cli
-go build -o vvp2
+make build
+# Or install to GOPATH/bin
+make install
 ```
 
-### Install
+### Verify Installation
 
 ```bash
-go install
+vvp2 version
 ```
 
-### Quick Start
+## Quick Start
 
-After building, initialize your configuration:
+After installation, initialize your configuration:
 
 ```bash
 # Run the interactive configuration wizard
