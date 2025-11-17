@@ -204,6 +204,14 @@ func runUpdateDeployment(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
+	// Preserve immutable fields: ensure name & namespace match existing resource and don't try to change them
+	existing, err := client.GetDeployment(ns, args[0])
+	if err != nil {
+		return fmt.Errorf("failed to fetch existing deployment: %w", err)
+	}
+	deployment.Metadata.Name = existing.Metadata.Name
+	deployment.Metadata.Namespace = existing.Metadata.Namespace
+
 	result, err := client.UpdateDeployment(ns, args[0], deployment)
 	if err != nil {
 		return fmt.Errorf("failed to update deployment: %w", err)

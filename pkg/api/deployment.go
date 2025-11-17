@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 )
@@ -26,13 +25,13 @@ type DeploymentMetadata struct {
 
 // DeploymentSpec holds deployment specification
 type DeploymentSpec struct {
-	State              string           `json:"state" yaml:"state"`
-	UpgradeStrategy    UpgradeStrategy  `json:"upgradeStrategy,omitempty" yaml:"upgradeStrategy,omitempty"`
-	RestoreStrategy    RestoreStrategy  `json:"restoreStrategy,omitempty" yaml:"restoreStrategy,omitempty"`
-	DeploymentTarget   DeploymentTarget `json:"deploymentTargetId,omitempty" yaml:"deploymentTargetId,omitempty"`
-	Template           Template         `json:"template" yaml:"template"`
-	MaxSavepointAge    string           `json:"maxSavepointCreationTime,omitempty" yaml:"maxSavepointCreationTime,omitempty"`
-	MaxJobCreationTime string           `json:"maxJobCreationTime,omitempty" yaml:"maxJobCreationTime,omitempty"`
+	State                string          `json:"state" yaml:"state"`
+	UpgradeStrategy      UpgradeStrategy `json:"upgradeStrategy,omitempty" yaml:"upgradeStrategy,omitempty"`
+	RestoreStrategy      RestoreStrategy `json:"restoreStrategy,omitempty" yaml:"restoreStrategy,omitempty"`
+	DeploymentTargetName string          `json:"deploymentTargetName,omitempty" yaml:"deploymentTargetName,omitempty"`
+	Template             Template        `json:"template" yaml:"template"`
+	MaxSavepointAge      string          `json:"maxSavepointCreationTime,omitempty" yaml:"maxSavepointCreationTime,omitempty"`
+	MaxJobCreationTime   string          `json:"maxJobCreationTime,omitempty" yaml:"maxJobCreationTime,omitempty"`
 }
 
 // DeploymentStatus holds deployment status
@@ -52,11 +51,7 @@ type RestoreStrategy struct {
 	AllowNonRestoredState bool   `json:"allowNonRestoredState,omitempty" yaml:"allowNonRestoredState,omitempty"`
 }
 
-// DeploymentTarget defines where to deploy
-type DeploymentTarget struct {
-	ID   string `json:"id,omitempty" yaml:"id,omitempty"`
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-}
+// (Removed old DeploymentTarget struct; API uses deploymentTargetName)
 
 // Template defines the Flink job template
 type Template struct {
@@ -159,10 +154,7 @@ func (c *Client) CreateDeployment(namespace string, deployment *Deployment) (*De
 
 // UpdateDeployment updates an existing deployment
 func (c *Client) UpdateDeployment(namespace, name string, deployment *Deployment) (*Deployment, error) {
-	// Debug: show outgoing deployment body for troubleshooting jarUri issues
-	if bodyBytes, err := json.Marshal(deployment); err == nil {
-		fmt.Printf("DEBUG UpdateDeployment body: %s\n", string(bodyBytes))
-	}
+	// NOTE: remove debug logging; could be re-enabled with a verbose flag later
 	var result Deployment
 	resp, err := c.httpClient.R().
 		SetBody(deployment).
