@@ -1,6 +1,8 @@
 # vvp2 CLI
 
 > **⚠️ EXPERIMENTAL PROJECT**: This is an experimental CLI tool under active development. Features may be incomplete, APIs may change, and stability is not guaranteed. Use at your own risk and avoid using in production environments without thorough testing.
+> 
+> **⚠️ UNOFFICIAL PROJECT**: This project is **not official** and is **not supported by Ververica**. It is a community-driven tool created independently. For official support and tooling, please refer to the [Ververica Platform documentation](https://docs.ververica.com/).
 
 A command-line interface tool for interacting with the Ververica Platform (VVP) API. Built with Go, using Cobra for CLI framework and Viper for configuration management.
 
@@ -264,6 +266,27 @@ vvp2 deployment-defaults replace -n my-namespace -f defaults.yaml
 # Update deployment defaults via PATCH with a SecretValue (advanced)
 vvp2 deployment-defaults update -n my-namespace -f secretvalue.yaml
 ```
+
+### Resource Usage Report Command
+
+If your Ververica Platform instance has resource usage tracking enabled, you can generate a platform-wide resource usage report:
+
+```bash
+vvp2 usage report
+```
+- By default, this returns usage for the last 7 days.
+- You can specify a custom date range with `--from` and `--to` (YYYY-MM-DD format):
+
+```bash
+vvp2 usage report --from "2025-11-01" --to "2025-11-18"
+```
+- Dates are in LocalDate format (`YYYY-MM-DD`), interpreted as 00:00 UTC.
+- `--from` is inclusive, `--to` is exclusive.
+- The endpoint is `/api/v1/status/resourceusage` (platform-wide, not namespaced).
+- Output format can be set with `-o json`, `-o yaml`, or default table view.
+- If the endpoint is not enabled, you'll see a clear error message.
+
+See [VVP documentation](https://docs.ververica.com/vvp/platform-operations/advanced-configurations/resource-usage-tracking/?highlight=Usage#generating-a-resource-usage-report) for details on enabling this feature.
 
 ### Session Commands
 

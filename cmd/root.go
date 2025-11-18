@@ -59,6 +59,9 @@ func init() {
 	viper.BindPFlag("api.insecure", rootCmd.PersistentFlags().Lookup("insecure"))
 	viper.BindPFlag("default.namespace", rootCmd.PersistentFlags().Lookup("namespace"))
 	viper.BindPFlag("output.format", rootCmd.PersistentFlags().Lookup("output"))
+
+ // Add usage command
+ rootCmd.AddCommand(usageCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

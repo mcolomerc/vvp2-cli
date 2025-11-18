@@ -36,8 +36,8 @@ type DeploymentSpec struct {
 
 // DeploymentStatus holds deployment status
 type DeploymentStatus struct {
-	State   string `json:"state" yaml:"state"`
-	Running bool   `json:"running" yaml:"running"`
+	State   string      `json:"state" yaml:"state"`
+	Running interface{} `json:"running,omitempty" yaml:"running,omitempty"`
 }
 
 // UpgradeStrategy defines upgrade strategy
