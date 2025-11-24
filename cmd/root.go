@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 	Use:   "vvp2",
 	Short: "A CLI tool to interact with Ververica Platform API",
 	Long: `vvp2 is a command-line interface tool for interacting with the Ververica Platform API.
-It provides commands to manage deployments, namespaces, sessions, and other VVP resources.`,
+It provides commands to manage deployments, namespaces, session clusters, and other VVP resources.`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -60,8 +60,8 @@ func init() {
 	viper.BindPFlag("default.namespace", rootCmd.PersistentFlags().Lookup("namespace"))
 	viper.BindPFlag("output.format", rootCmd.PersistentFlags().Lookup("output"))
 
- // Add usage command
- rootCmd.AddCommand(usageCmd)
+	// Add usage command
+	rootCmd.AddCommand(usageCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

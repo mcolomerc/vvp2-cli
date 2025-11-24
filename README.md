@@ -10,22 +10,12 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 
 **Latest Update**: API endpoints have been validated against the VVP OpenAPI specification. Some features may have limited functionality:
 
-- ✅ **Namespaces**: Fully functional with correct endpoints (`/namespaces/v1`)
-- ✅ **Deployments (Read)**: List and get operations work (`/api/v1/namespaces/{ns}/deployments/with-cr`)
-- ⚠️ **Deployments (Write)**: Create/update/delete operations require validation against your VVP instance
-- ❓ **Sessions**: Endpoints need verification
-- ❓ **Deployment Targets**: API availability needs confirmation
+- ✅ **Session Clusters**: Fully functional via Application Manager API (`/api/v1/namespaces/{ns}/sessionclusters`)
  
 
 ## Features
 
-- **Namespace Management**: List, create, update, and delete VVP namespaces
-- **Deployment Management**: Manage Flink deployments (list, get, create, update, delete, state changes)
-- **Session Management**: Manage SQL session clusters
-- **Deployment Target Management**: Manage deployment targets (Kubernetes namespaces, etc.)
-- **Deployment Defaults Management**: Get and modify namespace-level deployment defaults (Application Manager)
-- **Flexible Configuration**: Configure via CLI flags, environment variables, or configuration file stored in `~/.vvp2/`
-- **Multiple Output Formats**: Table, JSON, or YAML output
+- **Session Cluster Management**: Manage SQL session clusters (list, get, create, update, delete)
 - **TLS Options**: Support for insecure mode to skip TLS verification
 
 ## Installation
@@ -267,6 +257,30 @@ vvp2 deployment-defaults replace -n my-namespace -f defaults.yaml
 vvp2 deployment-defaults update -n my-namespace -f secretvalue.yaml
 ```
 
+### Session Cluster Commands
+
+Session clusters provide interactive SQL environments for executing Flink SQL queries. If you configured a default namespace, you can omit `-n/--namespace`.
+
+```bash
+# List session clusters in a namespace
+vvp2 sessioncluster list -n my-namespace
+# Or use aliases
+vvp2 sc list -n my-namespace
+vvp2 session-cluster list -n my-namespace
+
+# Get a specific session cluster
+vvp2 sc get my-sql-session -n my-namespace
+
+# Create a session cluster from file
+vvp2 sc create -n my-namespace -f sessioncluster.yaml
+
+# Update a session cluster
+vvp2 sc update my-sql-session -n my-namespace -f sessioncluster.yaml
+
+# Delete a session cluster
+vvp2 sc delete my-sql-session -n my-namespace
+```
+
 ### Resource Usage Report Command
 
 If your Ververica Platform instance has resource usage tracking enabled, you can generate a platform-wide resource usage report:
@@ -287,27 +301,6 @@ vvp2 usage report --from "2025-11-01" --to "2025-11-18"
 - If the endpoint is not enabled, you'll see a clear error message.
 
 See [VVP documentation](https://docs.ververica.com/vvp/platform-operations/advanced-configurations/resource-usage-tracking/?highlight=Usage#generating-a-resource-usage-report) for details on enabling this feature.
-
-### Session Commands
-
-Note: If you configured a default namespace (via `vvp2 config init` or `~/.vvp2/config.yaml`), you can omit `-n/--namespace`.
-
-```bash
-# List sessions in a namespace
-vvp2 session list -n my-namespace
-
-# Get a specific session
-vvp2 session get my-session -n my-namespace
-
-# Create a session from file
-vvp2 session create -n my-namespace -f session.yaml
-
-# Update a session
-vvp2 session update my-session -n my-namespace -f session.yaml
-
-# Delete a session
-vvp2 session delete my-session -n my-namespace
-```
 
 ## Example Files
 
@@ -338,6 +331,34 @@ spec:
       namespace: "flink-jobs"
   ```
 
+### Session Cluster Example
+
+```yaml
+apiVersion: v1
+kind: SessionCluster
+metadata:
+  name: my-sql-session
+  namespace: default
+  labels:
+    environment: dev
+    team: data-platform
+spec:
+  deploymentTargetName: vvp-jobs-flink
+  state: RUNNING
+  flinkImageRegistry: docker.io
+  flinkImageRepository: confluentinc/cp-flink
+  flinkImageTag: 1.19.1-cp1
+  flinkVersion: "1.19"
+  numberOfTaskManagers: 2
+  resources:
+    jobmanager:
+      cpu: 1.0
+      memory: 2048m
+    taskmanager:
+      cpu: 2.0
+      memory: 4096m
+```
+
 ### Deployment Example
 
 ```yaml
@@ -367,22 +388,6 @@ spec:
         taskmanager:
           cpu: "2"
           memory: "2G"
-```
-
-### Session Example
-
-```yaml
-metadata:
-  name: my-session
-  namespace: my-namespace
-spec:
-  flinkVersion: "1.17"
-  deploymentTargetId: "default"
-  flinkConfiguration:
-    execution.checkpointing.interval: "60s"
-  sessionClusterResourceProfile:
-    cpu: "2"
-    memory: "4G"
 ```
 
 ## Output Formats

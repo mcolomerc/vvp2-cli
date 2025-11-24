@@ -1,0 +1,28 @@
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: my-sql-query
+  labels: {}
+spec:
+  state: running
+  deploymentTargetName: myDeploymentTarget
+  restoreStrategy:
+    kind: latest_state
+  upgradeStrategy:
+    kind: stateful
+  template:
+    spec:
+      artifact:
+        kind: sqlscript
+        flinkVersion: 1.13
+        sqlScript: INSERT INTO sinkTable SELECT * FROM sourceTable;
+      parallelism: 1
+      resources:
+        taskManager:
+          memory: 1.5g
+      flinkConfiguration:
+        taskmanager.numberOfTaskSlots: 1
+        state.savepoints.dir: s3://flink/savepoints
+      logging:
+        log4jLoggers:
+          org.apache.flink.streaming.examples: DEBUG

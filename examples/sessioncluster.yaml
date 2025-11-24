@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: SessionCluster
+metadata:
+  name: my-sql-session
+  namespace: default
+  labels:
+    environment: dev
+    team: data-platform
+  annotations:
+    description: "Example SQL session cluster for interactive queries"
+spec:
+  deploymentTargetName: kubernetes-target
+  state: RUNNING
+  
+  # Flink image configuration
+  flinkImageRegistry: docker.io
+  flinkImageRepository: confluentinc/cp-flink
+  flinkImageTag: 1.19.1-cp1
+  flinkVersion: "1.19"
+  
+  # Cluster sizing
+  numberOfTaskManagers: 2
+  
+  # Resource configuration for JobManager and TaskManagers
+  resources:
+    jobmanager:
+      cpu: 1.0
+      memory: 2048m
+    taskmanager:
+      cpu: 2.0
+      memory: 4096m
+  
+  # Optional: Kubernetes-specific configuration
+  # kubernetes:
+  #   pods:
+  #     annotations:
+  #       custom-annotation: "value"
+  
+  # Logging configuration (required)
+  logging:
+    loggingProfile: default
+    log4jLoggers:
+      root.level: "INFO"

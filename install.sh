@@ -181,7 +181,7 @@ show_usage() {
     echo "     $ vvp2 --help"
     echo
     echo "  2. Set up your configuration:"
-    echo "     $ vvp2 session --help"
+    echo "     $ vvp2 config init"
     echo
     echo "  3. Start managing deployments:"
     echo "     $ vvp2 deployment list"
@@ -192,7 +192,7 @@ show_usage() {
     echo
     echo "💡 Pro Tips:"
     echo "  • Use 'vvp2 --help' to see all available commands"
-    echo "  • Configure your session with environment variables or config files"
+    echo "  • Configure with environment variables or config file at ~/.vvp2/config.yaml"
     echo
 }
 
