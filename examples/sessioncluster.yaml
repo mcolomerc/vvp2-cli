@@ -13,10 +13,10 @@ spec:
   state: RUNNING
   
   # Flink image configuration
-  flinkImageRegistry: docker.io
-  flinkImageRepository: confluentinc/cp-flink
-  flinkImageTag: 1.19.1-cp1
-  flinkVersion: "1.19"
+  flinkImageRegistry: registry.ververica.com/v2.15
+  flinkImageRepository: flink
+  flinkImageTag: 1.20.1-stream1-scala_2.12-java11
+  flinkVersion: "1.20"
   
   # Cluster sizing
   numberOfTaskManagers: 2
