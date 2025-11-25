@@ -18,6 +18,7 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 - **Session Cluster Management**: Manage SQL session clusters (list, get, create, update, delete)
 - **Job Management**: List and view Flink jobs running in the platform
 - **Savepoint Management**: List, view, create, and delete savepoints
+- **Secret Value Management**: Securely manage sensitive configuration data like passwords and API keys
 - **TLS Options**: Support for insecure mode to skip TLS verification
 
 ## Installation
@@ -336,6 +337,39 @@ vvp2 savepoint list -n my-namespace -o json
 ```
 
 **Note**: When creating a savepoint, you must specify either `--deployment-id` or `--job-id`, but not both. Savepoint IDs are UUIDs.
+
+### Secret Value Commands
+
+Secret values store sensitive configuration data like passwords, API keys, and tokens. They can be referenced in deployments and other resources.
+
+```bash
+# List all secret values in a namespace
+vvp2 secret-value list -n my-namespace
+# Or use aliases
+vvp2 sv list -n my-namespace
+vvp2 secret list -n my-namespace
+vvp2 secrets list -n my-namespace
+
+# Get details of a specific secret value by name
+vvp2 secret-value get my-secret -n my-namespace
+
+# Create a secret value from a file
+vvp2 secret-value create -n my-namespace -f secretvalue.yaml
+
+# Update a secret value
+vvp2 secret-value update my-secret -n my-namespace -f secretvalue.yaml
+
+# Delete a secret value
+vvp2 secret-value delete my-secret -n my-namespace
+
+# List with JSON output (includes actual secret values)
+vvp2 secret-value list -n my-namespace -o json
+
+# Get secret with YAML output (includes actual secret value)
+vvp2 secret-value get my-secret -n my-namespace -o yaml
+```
+
+**Security Note**: In default table output, actual secret values are hidden. Use `-o json` or `-o yaml` to view the actual secret values.
 
 ### Resource Usage Report Command
 

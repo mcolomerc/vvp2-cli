@@ -27,27 +27,28 @@ type DeploymentDefaultsMetadata struct {
 
 // SecretValue represents a secret value resource used by some endpoints
 type SecretValue struct {
-	APIVersion string              `json:"apiVersion,omitempty"`
-	Kind       string              `json:"kind,omitempty"`
-	Metadata   SecretValueMetadata `json:"metadata"`
-	Spec       SecretValueSpec     `json:"spec"`
+	APIVersion string              `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Kind       string              `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Metadata   SecretValueMetadata `json:"metadata" yaml:"metadata"`
+	Spec       SecretValueSpec     `json:"spec" yaml:"spec"`
 }
 
 // SecretValueMetadata contains metadata for a secret value
 type SecretValueMetadata struct {
-	ID          string            `json:"id,omitempty"`
-	Name        string            `json:"name"`
-	Namespace   string            `json:"namespace,omitempty"`
-	Labels      map[string]string `json:"labels,omitempty"`
-	Annotations map[string]string `json:"annotations,omitempty"`
-	CreatedAt   time.Time         `json:"createdAt,omitempty"`
-	ModifiedAt  time.Time         `json:"modifiedAt,omitempty"`
+	ID              string            `json:"id,omitempty" yaml:"id,omitempty"`
+	Name            string            `json:"name" yaml:"name"`
+	Namespace       string            `json:"namespace,omitempty" yaml:"namespace,omitempty"`
+	Labels          map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations     map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
+	CreatedAt       time.Time         `json:"createdAt,omitempty" yaml:"createdAt,omitempty"`
+	ModifiedAt      time.Time         `json:"modifiedAt,omitempty" yaml:"modifiedAt,omitempty"`
+	ResourceVersion int32             `json:"resourceVersion,omitempty" yaml:"resourceVersion,omitempty"`
 }
 
 // SecretValueSpec contains the secret value specification
 type SecretValueSpec struct {
-	Kind  string `json:"kind,omitempty"`
-	Value string `json:"value,omitempty"`
+	Kind  string `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // GetDeploymentDefaults retrieves the deployment defaults for a namespace
