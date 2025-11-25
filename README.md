@@ -16,6 +16,7 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 ## Features
 
 - **Session Cluster Management**: Manage SQL session clusters (list, get, create, update, delete)
+- **Job Management**: List and view Flink jobs running in the platform
 - **TLS Options**: Support for insecure mode to skip TLS verification
 
 ## Installation
@@ -280,6 +281,28 @@ vvp2 sc update my-sql-session -n my-namespace -f sessioncluster.yaml
 # Delete a session cluster
 vvp2 sc delete my-sql-session -n my-namespace
 ```
+
+### Job Commands
+
+Jobs represent running Flink applications in the platform. Use these commands to view job status and details.
+
+```bash
+# List all jobs in a namespace
+vvp2 job list -n my-namespace
+# Or use alias
+vvp2 jobs list -n my-namespace
+
+# Get details of a specific job by ID
+vvp2 job get <job-id> -n my-namespace
+
+# List jobs with JSON output
+vvp2 job list -n my-namespace -o json
+
+# Get job details in YAML format
+vvp2 job get <job-id> -n my-namespace -o yaml
+```
+
+**Note**: Job IDs are UUIDs (e.g., `e998a415-1d6e-4a97-bd64-590f20b605e7`). You can get the job ID from the `job list` command output.
 
 ### Resource Usage Report Command
 
