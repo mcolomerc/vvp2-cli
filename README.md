@@ -19,6 +19,7 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 - **Job Management**: List and view Flink jobs running in the platform
 - **Savepoint Management**: List, view, create, and delete savepoints
 - **Secret Value Management**: Securely manage sensitive configuration data like passwords and API keys
+- **Platform Status**: View platform health, version, and component status
 - **TLS Options**: Support for insecure mode to skip TLS verification
 
 ## Installation
@@ -370,6 +371,27 @@ vvp2 secret-value get my-secret -n my-namespace -o yaml
 ```
 
 **Security Note**: In default table output, actual secret values are hidden. Use `-o json` or `-o yaml` to view the actual secret values.
+
+### Platform Status Command
+
+Check the overall health and status of your Ververica Platform instance.
+
+```bash
+# Get platform status
+vvp2 status
+
+# Get status in JSON format
+vvp2 status -o json
+
+# Get status in YAML format
+vvp2 status -o yaml
+```
+
+The status command displays:
+- **Health Status**: Overall platform health
+- **Version Information**: Platform version, edition, Flink version, build time
+- **Components**: Status of individual platform components
+- **Resource Usage**: Count of namespaces, deployments, jobs, and session clusters
 
 ### Resource Usage Report Command
 
