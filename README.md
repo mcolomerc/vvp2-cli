@@ -17,6 +17,7 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 
 - **Session Cluster Management**: Manage SQL session clusters (list, get, create, update, delete)
 - **Job Management**: List and view Flink jobs running in the platform
+- **Savepoint Management**: List, view, create, and delete savepoints
 - **TLS Options**: Support for insecure mode to skip TLS verification
 
 ## Installation
@@ -303,6 +304,38 @@ vvp2 job get <job-id> -n my-namespace -o yaml
 ```
 
 **Note**: Job IDs are UUIDs (e.g., `e998a415-1d6e-4a97-bd64-590f20b605e7`). You can get the job ID from the `job list` command output.
+
+### Savepoint Commands
+
+Savepoints are snapshots of Flink job state that can be used for recovery, upgrades, or migration. Use these commands to manage savepoints.
+
+```bash
+# List all savepoints in a namespace
+vvp2 savepoint list -n my-namespace
+# Or use aliases
+vvp2 sp list -n my-namespace
+vvp2 savepoints list -n my-namespace
+
+# Get details of a specific savepoint by ID
+vvp2 savepoint get <savepoint-id> -n my-namespace
+
+# Create a savepoint for a deployment
+vvp2 savepoint create --deployment-id <deployment-id> -n my-namespace
+
+# Create a savepoint for a job
+vvp2 savepoint create --job-id <job-id> -n my-namespace
+
+# Create a savepoint with a custom name
+vvp2 savepoint create --deployment-id <deployment-id> --name my-savepoint -n my-namespace
+
+# Delete a savepoint
+vvp2 savepoint delete <savepoint-id> -n my-namespace
+
+# List savepoints with JSON output
+vvp2 savepoint list -n my-namespace -o json
+```
+
+**Note**: When creating a savepoint, you must specify either `--deployment-id` or `--job-id`, but not both. Savepoint IDs are UUIDs.
 
 ### Resource Usage Report Command
 
