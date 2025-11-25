@@ -1,0 +1,30 @@
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: test-sql-with-session
+  namespace: default
+  labels:
+    type: test-sql-deployment
+spec:
+  state: RUNNING
+  deploymentTargetId: null
+  deploymentTargetName: null
+  sessionClusterName: my-sql-session
+  restoreStrategy:
+    kind: LATEST_STATE
+  upgradeStrategy:
+    kind: STATEFUL
+  template:
+    spec:
+      artifact:
+        kind: SQLSCRIPT
+        sqlScript: >-
+          INSERT INTO `mycatalog`.`db_name`.`my_table` 
+          VALUES ('1', 1, PROCTIME());
+      parallelism: 1
+      flinkConfiguration:
+        execution.checkpointing.interval: "30s"
+      logging:
+        loggingProfile: default
+        log4jLoggers:
+          root.level: INFO
