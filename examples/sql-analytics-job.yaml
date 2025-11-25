@@ -1,0 +1,60 @@
+# Complex SQL Deployment with Session Cluster
+# This example shows a more realistic SQL query with Kafka source and aggregations
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: sql-analytics-job
+  namespace: default
+  labels:
+    type: analytics
+    team: data-platform
+spec:
+  state: RUNNING
+  sessionClusterName: my-sql-session
+  restoreStrategy:
+    kind: LATEST_SAVEPOINT
+    allowNonRestoredState: true
+  upgradeStrategy:
+    kind: STATEFUL
+  template:
+    spec:
+      artifact:
+        kind: SQLSCRIPT
+        sqlScript: |
+          -- Create a table from Kafka source
+          CREATE TABLE orders (
+            order_id STRING,
+            customer_id STRING,
+            amount DOUBLE,
+            order_time TIMESTAMP(3),
+            WATERMARK FOR order_time AS order_time - INTERVAL '5' SECOND
+          ) WITH (
+            'connector' = 'kafka',
+            'topic' = 'orders',
+            'properties.bootstrap.servers' = 'kafka:9092',
+            'format' = 'json'
+          );
+          
+          -- Aggregate and insert into sink
+          INSERT INTO order_aggregates
+          SELECT 
+            customer_id,
+            COUNT(*) as order_count,
+            SUM(amount) as total_amount,
+            TUMBLE_END(order_time, INTERVAL '1' HOUR) as window_end
+          FROM orders
+          GROUP BY 
+            customer_id,
+            TUMBLE(order_time, INTERVAL '1' HOUR);
+      parallelism: 2
+      flinkConfiguration:
+        execution.checkpointing.interval: "60s"
+        execution.checkpointing.mode: EXACTLY_ONCE
+        state.backend.type: rocksdb
+        state.checkpoints.dir: "s3://my-bucket/checkpoints"
+        state.savepoints.dir: "s3://my-bucket/savepoints"
+      logging:
+        loggingProfile: default
+        log4jLoggers:
+          root.level: INFO
+          org.apache.kafka: WARN

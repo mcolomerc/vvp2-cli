@@ -1,137 +1,30 @@
-# Example 1: SQL Deployment using a Deployment Target
-# This example runs a SQL script on a dedicated deployment target
----
-kind: Deployment
-apiVersion: v1
-metadata:
-  name: sql-with-deployment-target
-  namespace: default
-  labels:
-    type: sql-deployment
-spec:
-  state: RUNNING
-  deploymentTargetName: kubernetes-target
-  restoreStrategy:
-    kind: LATEST_STATE
-  upgradeStrategy:
-    kind: STATEFUL
-  template:
-    spec:
-      artifact:
-        kind: SQLSCRIPT
-        flinkVersion: "1.20"
-        sqlScript: |
-          INSERT INTO sinkTable 
-          SELECT * FROM sourceTable;
-      parallelism: 2
-      resources:
-        jobmanager:
-          cpu: 1.0
-          memory: 1024m
-        taskmanager:
-          cpu: 2.0
-          memory: 2048m
-      flinkConfiguration:
-        taskmanager.numberOfTaskSlots: "2"
-        execution.checkpointing.interval: "60s"
-        state.backend: rocksdb
-      logging:
-        loggingProfile: default
-        log4jLoggers:
-          root.level: INFO
-
----
-# Example 2: SQL Deployment using a Session Cluster
-# This example runs a SQL script on an existing session cluster
-kind: Deployment
-apiVersion: v1
-metadata:
-  name: sql-with-session-cluster
-  namespace: default
-  labels:
-    type: sql-session-deployment
-spec:
-  state: RUNNING
-  deploymentTargetId: null
-  deploymentTargetName: null
-  sessionClusterName: my-sql-session
-  restoreStrategy:
-    kind: LATEST_STATE
-  upgradeStrategy:
-    kind: STATEFUL
-  template:
-    spec:
-      artifact:
-        kind: SQLSCRIPT
-        sqlScript: >-
-          INSERT INTO `mycatalog`.`db_name`.`my_table` 
-          VALUES ('1', 1, PROCTIME());
-      parallelism: 1
-      flinkConfiguration:
-        execution.checkpointing.interval: "30s"
-      logging:
-        loggingProfile: default
-        log4jLoggers:
-          root.level: INFO
-
----
-# Example 3: More Complex SQL Deployment with Session Cluster
-# This example shows a more realistic SQL query
-kind: Deployment
-apiVersion: v1
-metadata:
-  name: sql-analytics-job
-  namespace: default
-  labels:
-    type: analytics
-    team: data-platform
-spec:
-  state: RUNNING
-  sessionClusterName: my-sql-session
-  restoreStrategy:
-    kind: LATEST_SAVEPOINT
-    allowNonRestoredState: true
-  upgradeStrategy:
-    kind: STATEFUL
-  template:
-    spec:
-      artifact:
-        kind: SQLSCRIPT
-        sqlScript: |
-          -- Create a table from Kafka source
-          CREATE TABLE orders (
-            order_id STRING,
-            customer_id STRING,
-            amount DOUBLE,
-            order_time TIMESTAMP(3),
-            WATERMARK FOR order_time AS order_time - INTERVAL '5' SECOND
-          ) WITH (
-            'connector' = 'kafka',
-            'topic' = 'orders',
-            'properties.bootstrap.servers' = 'kafka:9092',
-            'format' = 'json'
-          );
-          
-          -- Aggregate and insert into sink
-          INSERT INTO order_aggregates
-          SELECT 
-            customer_id,
-            COUNT(*) as order_count,
-            SUM(amount) as total_amount,
-            TUMBLE_END(order_time, INTERVAL '1' HOUR) as window_end
-          FROM orders
-          GROUP BY 
-            customer_id,
-            TUMBLE(order_time, INTERVAL '1' HOUR);
-      parallelism: 2
-      flinkConfiguration:
-        execution.checkpointing.interval: "60s"
-        execution.checkpointing.mode: EXACTLY_ONCE
-        state.backend.type: rocksdb
-        state.checkpoints.dir: "s3://my-bucket/checkpoints"
-        state.savepoints.dir: "s3://my-bucket/savepoints"
-      logging:
-        loggingProfile: default
-        log4jLoggers:
-          root.level: INFO
-          org.apache.kafka: WARN
+# SQL Deployment Examples - Index File
+#
+# This directory contains multiple SQL deployment examples.
+# Each example is in its own file for easier management and testing.
+#
+# Available Examples:
+#
+# 1. sql-with-deployment-target.yaml
+#    - Basic SQL deployment using a dedicated deployment target
+#    - Includes resource configuration for JobManager and TaskManager
+#    - Best for production workloads requiring dedicated resources
+#
+# 2. sql-with-session-cluster.yaml
+#    - Simple SQL deployment using a shared session cluster
+#    - Faster startup, shared resources
+#    - Best for development and interactive queries
+#
+# 3. sql-analytics-job.yaml
+#    - Complex analytics job with Kafka source
+#    - Demonstrates table creation and windowed aggregations
+#    - Uses session cluster with advanced state management
+#
+# 4. test-sql-session.yaml
+#    - Minimal test example for quick validation
+#    - Simple INSERT statement
+#
+# Usage:
+#   vvp2 deployment create -n default -f <example-file>.yaml
+#
+# For detailed documentation, see SQL_DEPLOYMENT_GUIDE.md

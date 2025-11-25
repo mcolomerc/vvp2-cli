@@ -1,0 +1,40 @@
+# SQL Deployment using a Deployment Target
+# This example runs a SQL script on a dedicated deployment target
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: sql-with-deployment-target
+  namespace: default
+  labels:
+    type: sql-deployment
+spec:
+  state: RUNNING
+  deploymentTargetName: kubernetes-target
+  restoreStrategy:
+    kind: LATEST_STATE
+  upgradeStrategy:
+    kind: STATEFUL
+  template:
+    spec:
+      artifact:
+        kind: SQLSCRIPT
+        flinkVersion: "1.20"
+        sqlScript: |
+          INSERT INTO sinkTable 
+          SELECT * FROM sourceTable;
+      parallelism: 2
+      resources:
+        jobmanager:
+          cpu: 1.0
+          memory: 1024m
+        taskmanager:
+          cpu: 2.0
+          memory: 2048m
+      flinkConfiguration:
+        taskmanager.numberOfTaskSlots: "2"
+        execution.checkpointing.interval: "60s"
+        state.backend: rocksdb
+      logging:
+        loggingProfile: default
+        log4jLoggers:
+          root.level: INFO

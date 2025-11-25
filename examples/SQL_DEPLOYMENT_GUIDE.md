@@ -7,14 +7,30 @@ This directory contains examples for creating SQL deployments in Ververica Platf
 
 ## Example Files
 
-### `sqldeployment.yaml`
-Contains three examples:
-- **Example 1**: SQL deployment with deployment target
-- **Example 2**: Simple SQL deployment with session cluster
-- **Example 3**: Complex SQL deployment with Kafka source and aggregations
+### Individual Example Files
 
-### `test-sql-session.yaml`
-A minimal test example for SQL deployments using a session cluster.
+1. **`sql-with-deployment-target.yaml`**
+   - SQL deployment using a dedicated deployment target
+   - Includes JobManager and TaskManager resource configuration
+   - Best for production workloads
+
+2. **`sql-with-session-cluster.yaml`**
+   - Simple SQL deployment using a shared session cluster
+   - Fast startup with shared resources
+   - Best for development and interactive queries
+
+3. **`sql-analytics-job.yaml`**
+   - Complex analytics job with Kafka source
+   - Demonstrates windowed aggregations and table creation
+   - Uses session cluster with advanced state management
+
+4. **`test-sql-session.yaml`**
+   - Minimal test example for quick validation
+   - Simple INSERT statement for testing
+
+### Index File
+
+**`sqldeployment.yaml`** - Index file listing all examples with descriptions
 
 ## Prerequisites
 
@@ -40,19 +56,21 @@ A minimal test example for SQL deployments using a session cluster.
 ### 1. Create SQL Deployment with Session Cluster
 
 ```bash
-# Using the simple example
+# Using the simple session cluster example
+vvp2 deployment create -n default -f examples/sql-with-session-cluster.yaml
+
+# Using the minimal test example
 vvp2 deployment create -n default -f examples/test-sql-session.yaml
 
 # Using the analytics example
-vvp2 deployment create -n default -f examples/sqldeployment.yaml
+vvp2 deployment create -n default -f examples/sql-analytics-job.yaml
 ```
 
 ### 2. Create SQL Deployment with Deployment Target
 
 ```bash
-# Edit sqldeployment.yaml to use the first example
-# Then create the deployment
-vvp2 deployment create -n default -f examples/sqldeployment.yaml
+# Using the deployment target example
+vvp2 deployment create -n default -f examples/sql-with-deployment-target.yaml
 ```
 
 ### 3. List Deployments

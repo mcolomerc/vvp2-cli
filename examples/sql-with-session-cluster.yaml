@@ -1,0 +1,32 @@
+# SQL Deployment using a Session Cluster
+# This example runs a SQL script on an existing session cluster
+kind: Deployment
+apiVersion: v1
+metadata:
+  name: sql-with-session-cluster
+  namespace: default
+  labels:
+    type: sql-session-deployment
+spec:
+  state: RUNNING
+  deploymentTargetId: null
+  deploymentTargetName: null
+  sessionClusterName: my-sql-session
+  restoreStrategy:
+    kind: LATEST_STATE
+  upgradeStrategy:
+    kind: STATEFUL
+  template:
+    spec:
+      artifact:
+        kind: SQLSCRIPT
+        sqlScript: >-
+          INSERT INTO `mycatalog`.`db_name`.`my_table` 
+          VALUES ('1', 1, PROCTIME());
+      parallelism: 1
+      flinkConfiguration:
+        execution.checkpointing.interval: "30s"
+      logging:
+        loggingProfile: default
+        log4jLoggers:
+          root.level: INFO
