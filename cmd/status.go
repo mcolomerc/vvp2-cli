@@ -56,7 +56,7 @@ func printStatus(status *api.Status) error {
 	default:
 		// Table format with details
 		fmt.Println("=== Platform Status ===")
-		
+
 		// Health Status
 		fmt.Println("\nHealth:")
 		if status.Health.Status != "" {

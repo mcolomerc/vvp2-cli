@@ -60,12 +60,12 @@ func init() {
 	// Add flags
 	savepointListCmd.Flags().StringP("namespace", "n", "", "Namespace")
 	savepointGetCmd.Flags().StringP("namespace", "n", "", "Namespace")
-	
+
 	savepointCreateCmd.Flags().StringP("namespace", "n", "", "Namespace")
 	savepointCreateCmd.Flags().String("deployment-id", "", "Deployment ID to create savepoint for")
 	savepointCreateCmd.Flags().String("job-id", "", "Job ID to create savepoint for")
 	savepointCreateCmd.Flags().String("name", "", "Optional name for the savepoint")
-	
+
 	savepointDeleteCmd.Flags().StringP("namespace", "n", "", "Namespace")
 }
 
@@ -227,7 +227,7 @@ func printSavepoints(savepoints []api.Savepoint) error {
 			if jobID == "" {
 				jobID = "-"
 			}
-			
+
 			created := "-"
 			if !sp.Metadata.CreatedAt.IsZero() {
 				created = sp.Metadata.CreatedAt.Format("2006-01-02 15:04:05")
@@ -272,7 +272,7 @@ func printSavepoint(sp *api.Savepoint) error {
 		}
 		fmt.Printf("Namespace: %s\n", sp.Metadata.Namespace)
 		fmt.Printf("State: %s\n", sp.Status.State)
-		
+
 		if sp.Spec.DeploymentID != "" {
 			fmt.Printf("Deployment ID: %s\n", sp.Spec.DeploymentID)
 		}

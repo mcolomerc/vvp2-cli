@@ -123,7 +123,7 @@ func printJobs(jobs []api.Job) error {
 			}
 			state := job.Status.State
 			deploymentID := job.Spec.DeploymentID
-			
+
 			startTime := "-"
 			if job.Status.Running != nil && !job.Status.Running.StartTime.IsZero() {
 				startTime = job.Status.Running.StartTime.Format("2006-01-02 15:04:05")

@@ -76,4 +76,3 @@ func (c *Client) DeleteSecretValue(namespace, name string) error {
 
 	return handleResponse(resp, err)
 }
-

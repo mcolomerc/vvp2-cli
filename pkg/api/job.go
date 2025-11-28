@@ -34,12 +34,12 @@ type JobSpec struct {
 
 // JobStatus holds job status information
 type JobStatus struct {
-	State       string               `json:"state,omitempty" yaml:"state,omitempty"`
-	Running     *JobStatusRunning    `json:"running,omitempty" yaml:"running,omitempty"`
-	Failed      *JobStatusFailed     `json:"failed,omitempty" yaml:"failed,omitempty"`
-	Cancelled   *JobStatusCancelled  `json:"cancelled,omitempty" yaml:"cancelled,omitempty"`
-	Finished    *JobStatusFinished   `json:"finished,omitempty" yaml:"finished,omitempty"`
-	Suspended   *JobStatusSuspended  `json:"suspended,omitempty" yaml:"suspended,omitempty"`
+	State       string                `json:"state,omitempty" yaml:"state,omitempty"`
+	Running     *JobStatusRunning     `json:"running,omitempty" yaml:"running,omitempty"`
+	Failed      *JobStatusFailed      `json:"failed,omitempty" yaml:"failed,omitempty"`
+	Cancelled   *JobStatusCancelled   `json:"cancelled,omitempty" yaml:"cancelled,omitempty"`
+	Finished    *JobStatusFinished    `json:"finished,omitempty" yaml:"finished,omitempty"`
+	Suspended   *JobStatusSuspended   `json:"suspended,omitempty" yaml:"suspended,omitempty"`
 	Terminating *JobStatusTerminating `json:"terminating,omitempty" yaml:"terminating,omitempty"`
 }
 

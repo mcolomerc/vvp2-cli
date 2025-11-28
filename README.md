@@ -15,6 +15,8 @@ A command-line interface tool for interacting with the Ververica Platform (VVP) 
 
 ## Features
 
+- **Deployment Management**: Create, update, and manage Flink deployments with full Kubernetes pod options support
+- **Kubernetes Pod Templates**: Configure JobManager and TaskManager pods with volumes, secrets, node selectors, tolerations, and affinity rules ([docs](docs/KUBERNETES_POD_OPTIONS.md))
 - **Session Cluster Management**: Manage SQL session clusters (list, get, create, update, delete)
 - **Job Management**: List and view Flink jobs running in the platform
 - **Savepoint Management**: List, view, create, and delete savepoints

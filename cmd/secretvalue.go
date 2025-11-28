@@ -66,15 +66,15 @@ func init() {
 	// Add flags
 	secretValueListCmd.Flags().StringP("namespace", "n", "", "Namespace")
 	secretValueGetCmd.Flags().StringP("namespace", "n", "", "Namespace")
-	
+
 	secretValueCreateCmd.Flags().StringP("namespace", "n", "", "Namespace")
 	secretValueCreateCmd.Flags().StringP("file", "f", "", "File containing secret value definition")
 	secretValueCreateCmd.MarkFlagRequired("file")
-	
+
 	secretValueUpdateCmd.Flags().StringP("namespace", "n", "", "Namespace")
 	secretValueUpdateCmd.Flags().StringP("file", "f", "", "File containing secret value definition")
 	secretValueUpdateCmd.MarkFlagRequired("file")
-	
+
 	secretValueDeleteCmd.Flags().StringP("namespace", "n", "", "Namespace")
 }
 
@@ -256,7 +256,7 @@ func printSecretValues(secretValues []api.SecretValue) error {
 			if kind == "" {
 				kind = "-"
 			}
-			
+
 			created := "-"
 			if !sv.Metadata.CreatedAt.IsZero() {
 				created = sv.Metadata.CreatedAt.Format("2006-01-02 15:04:05")
@@ -297,11 +297,11 @@ func printSecretValue(sv *api.SecretValue) error {
 			fmt.Printf("ID: %s\n", sv.Metadata.ID)
 		}
 		fmt.Printf("Namespace: %s\n", sv.Metadata.Namespace)
-		
+
 		if sv.Spec.Kind != "" {
 			fmt.Printf("Kind: %s\n", sv.Spec.Kind)
 		}
-		
+
 		// Don't print the actual secret value in default output
 		if sv.Spec.Value != "" {
 			fmt.Printf("Value: <hidden> (use -o json or -o yaml to view)\n")

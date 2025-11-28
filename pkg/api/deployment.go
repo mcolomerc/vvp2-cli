@@ -7,9 +7,9 @@ import (
 
 // Deployment represents a VVP deployment
 type Deployment struct {
-	Metadata DeploymentMetadata  `json:"metadata" yaml:"metadata"`
-	Spec     DeploymentSpec      `json:"spec" yaml:"spec"`
-	Status   *DeploymentStatus   `json:"status,omitempty" yaml:"status,omitempty"`
+	Metadata DeploymentMetadata `json:"metadata" yaml:"metadata"`
+	Spec     DeploymentSpec     `json:"spec" yaml:"spec"`
+	Status   *DeploymentStatus  `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
 // DeploymentMetadata holds deployment metadata
@@ -68,17 +68,19 @@ type TemplateSpec struct {
 	FlinkImageTag        string            `json:"flinkImageTag,omitempty" yaml:"flinkImageTag,omitempty"`
 	Logging              Logging           `json:"logging,omitempty" yaml:"logging,omitempty"`
 	FlinkConfiguration   map[string]string `json:"flinkConfiguration,omitempty" yaml:"flinkConfiguration,omitempty"`
+	Kubernetes           *KubernetesSpec   `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty"`
 }
 
-// Artifact represents a JAR artifact
+// Artifact represents a JAR artifact or SQL script
 type Artifact struct {
 	Kind          string `json:"kind" yaml:"kind"`
-	JarURI        string `json:"jarUri" yaml:"jarUri"`
+	JarURI        string `json:"jarUri,omitempty" yaml:"jarUri,omitempty"`
 	MainClass     string `json:"mainClass,omitempty" yaml:"mainClass,omitempty"`
 	EntryClass    string `json:"entryClass,omitempty" yaml:"entryClass,omitempty"`
 	MainArgs      string `json:"mainArgs,omitempty" yaml:"mainArgs,omitempty"`
 	FlinkVersion  string `json:"flinkVersion,omitempty" yaml:"flinkVersion,omitempty"`
 	FlinkImageTag string `json:"flinkImageTag,omitempty" yaml:"flinkImageTag,omitempty"`
+	SQLScript     string `json:"sqlScript,omitempty" yaml:"sqlScript,omitempty"`
 }
 
 // Resources defines resource requirements
@@ -97,6 +99,151 @@ type ResourceSpec struct {
 // Logging defines logging configuration
 type Logging struct {
 	Log4jLoggers map[string]string `json:"log4jLoggers,omitempty" yaml:"log4jLoggers,omitempty"`
+}
+
+// KubernetesSpec defines Kubernetes-specific configuration
+type KubernetesSpec struct {
+	Labels                 map[string]string     `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Pods                   *KubernetesPodOptions `json:"pods,omitempty" yaml:"pods,omitempty"`
+	JobManagerPodTemplate  *PodTemplateSpec      `json:"jobManagerPodTemplate,omitempty" yaml:"jobManagerPodTemplate,omitempty"`
+	TaskManagerPodTemplate *PodTemplateSpec      `json:"taskManagerPodTemplate,omitempty" yaml:"taskManagerPodTemplate,omitempty"`
+}
+
+// KubernetesPodOptions defines pod-level options
+type KubernetesPodOptions struct {
+	Labels       map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations  map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
+	NodeSelector map[string]string `json:"nodeSelector,omitempty" yaml:"nodeSelector,omitempty"`
+	Tolerations  []Toleration      `json:"tolerations,omitempty" yaml:"tolerations,omitempty"`
+	Affinity     *Affinity         `json:"affinity,omitempty" yaml:"affinity,omitempty"`
+	EnvVars      []EnvVar          `json:"envVars,omitempty" yaml:"envVars,omitempty"`
+	Volumes      []Volume          `json:"volumes,omitempty" yaml:"volumes,omitempty"`
+	VolumeMounts []VolumeMount     `json:"volumeMounts,omitempty" yaml:"volumeMounts,omitempty"`
+}
+
+// PodTemplateSpec represents a Kubernetes V1 PodTemplateSpec
+type PodTemplateSpec struct {
+	APIVersion string       `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Kind       string       `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Metadata   *PodMetadata `json:"metadata,omitempty" yaml:"metadata,omitempty"`
+	Spec       *PodSpec     `json:"spec,omitempty" yaml:"spec,omitempty"`
+}
+
+// PodMetadata represents pod metadata
+type PodMetadata struct {
+	Name        string            `json:"name,omitempty" yaml:"name,omitempty"`
+	Labels      map[string]string `json:"labels,omitempty" yaml:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty" yaml:"annotations,omitempty"`
+}
+
+// PodSpec represents pod specification
+type PodSpec struct {
+	Containers         []Container       `json:"containers,omitempty" yaml:"containers,omitempty"`
+	InitContainers     []Container       `json:"initContainers,omitempty" yaml:"initContainers,omitempty"`
+	Volumes            []Volume          `json:"volumes,omitempty" yaml:"volumes,omitempty"`
+	NodeSelector       map[string]string `json:"nodeSelector,omitempty" yaml:"nodeSelector,omitempty"`
+	Affinity           *Affinity         `json:"affinity,omitempty" yaml:"affinity,omitempty"`
+	Tolerations        []Toleration      `json:"tolerations,omitempty" yaml:"tolerations,omitempty"`
+	ServiceAccountName string            `json:"serviceAccountName,omitempty" yaml:"serviceAccountName,omitempty"`
+	SecurityContext    interface{}       `json:"securityContext,omitempty" yaml:"securityContext,omitempty"`
+}
+
+// Container represents a container specification
+type Container struct {
+	Name            string        `json:"name,omitempty" yaml:"name,omitempty"`
+	Image           string        `json:"image,omitempty" yaml:"image,omitempty"`
+	Command         []string      `json:"command,omitempty" yaml:"command,omitempty"`
+	Args            []string      `json:"args,omitempty" yaml:"args,omitempty"`
+	Env             []EnvVar      `json:"env,omitempty" yaml:"env,omitempty"`
+	VolumeMounts    []VolumeMount `json:"volumeMounts,omitempty" yaml:"volumeMounts,omitempty"`
+	Resources       interface{}   `json:"resources,omitempty" yaml:"resources,omitempty"`
+	SecurityContext interface{}   `json:"securityContext,omitempty" yaml:"securityContext,omitempty"`
+}
+
+// EnvVar represents an environment variable
+type EnvVar struct {
+	Name      string        `json:"name" yaml:"name"`
+	Value     string        `json:"value,omitempty" yaml:"value,omitempty"`
+	ValueFrom *EnvVarSource `json:"valueFrom,omitempty" yaml:"valueFrom,omitempty"`
+}
+
+// EnvVarSource represents the source for an environment variable's value
+type EnvVarSource struct {
+	ConfigMapKeyRef *ConfigMapKeySelector `json:"configMapKeyRef,omitempty" yaml:"configMapKeyRef,omitempty"`
+	SecretKeyRef    *SecretKeySelector    `json:"secretKeyRef,omitempty" yaml:"secretKeyRef,omitempty"`
+	FieldRef        *FieldSelector        `json:"fieldRef,omitempty" yaml:"fieldRef,omitempty"`
+}
+
+// ConfigMapKeySelector selects a key from a ConfigMap
+type ConfigMapKeySelector struct {
+	Name string `json:"name" yaml:"name"`
+	Key  string `json:"key" yaml:"key"`
+}
+
+// SecretKeySelector selects a key from a Secret
+type SecretKeySelector struct {
+	Name string `json:"name" yaml:"name"`
+	Key  string `json:"key" yaml:"key"`
+}
+
+// FieldSelector selects a field from the pod
+type FieldSelector struct {
+	FieldPath string `json:"fieldPath" yaml:"fieldPath"`
+}
+
+// Volume represents a volume that can be mounted
+type Volume struct {
+	Name                  string           `json:"name" yaml:"name"`
+	Secret                *SecretVolume    `json:"secret,omitempty" yaml:"secret,omitempty"`
+	ConfigMap             *ConfigMapVolume `json:"configMap,omitempty" yaml:"configMap,omitempty"`
+	EmptyDir              interface{}      `json:"emptyDir,omitempty" yaml:"emptyDir,omitempty"`
+	HostPath              *HostPathVolume  `json:"hostPath,omitempty" yaml:"hostPath,omitempty"`
+	PersistentVolumeClaim *PVCVolume       `json:"persistentVolumeClaim,omitempty" yaml:"persistentVolumeClaim,omitempty"`
+}
+
+// SecretVolume represents a secret-backed volume
+type SecretVolume struct {
+	SecretName string `json:"secretName" yaml:"secretName"`
+}
+
+// ConfigMapVolume represents a configmap-backed volume
+type ConfigMapVolume struct {
+	Name string `json:"name" yaml:"name"`
+}
+
+// HostPathVolume represents a host path volume
+type HostPathVolume struct {
+	Path string `json:"path" yaml:"path"`
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// PVCVolume represents a persistent volume claim
+type PVCVolume struct {
+	ClaimName string `json:"claimName" yaml:"claimName"`
+}
+
+// VolumeMount represents a volume mount
+type VolumeMount struct {
+	Name      string `json:"name" yaml:"name"`
+	MountPath string `json:"mountPath" yaml:"mountPath"`
+	ReadOnly  bool   `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
+	SubPath   string `json:"subPath,omitempty" yaml:"subPath,omitempty"`
+}
+
+// Toleration represents a pod toleration
+type Toleration struct {
+	Key               string `json:"key,omitempty" yaml:"key,omitempty"`
+	Operator          string `json:"operator,omitempty" yaml:"operator,omitempty"`
+	Value             string `json:"value,omitempty" yaml:"value,omitempty"`
+	Effect            string `json:"effect,omitempty" yaml:"effect,omitempty"`
+	TolerationSeconds *int64 `json:"tolerationSeconds,omitempty" yaml:"tolerationSeconds,omitempty"`
+}
+
+// Affinity represents pod affinity/anti-affinity rules
+type Affinity struct {
+	NodeAffinity    interface{} `json:"nodeAffinity,omitempty" yaml:"nodeAffinity,omitempty"`
+	PodAffinity     interface{} `json:"podAffinity,omitempty" yaml:"podAffinity,omitempty"`
+	PodAntiAffinity interface{} `json:"podAntiAffinity,omitempty" yaml:"podAntiAffinity,omitempty"`
 }
 
 // DeploymentList represents a list of deployments
